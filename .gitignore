@@ -1,0 +1,9 @@
+.git/
+/*.zip
+!.gitkeep
+/node_modules/
+/logs/
+/data/
+/config.json
+/nyc_output
+/package-lock.json
