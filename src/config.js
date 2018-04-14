@@ -1,4 +1,8 @@
-var local_config = require("../config.json");
+try{
+  var local_config = require("../config.json");
+}catch(err){
+  var local_config = {};
+}
 
 var config = {
   logger: {
