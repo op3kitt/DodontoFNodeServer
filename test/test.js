@@ -4,20 +4,43 @@ const MockRes = require('mock-res');
 const MockReq = require('mock-req');
 const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
+const requireNew = require('require-new');
+const path = require('path');
+global.config = require('../src/config.js');
+global.apppath = path.resolve(__dirname+'/..');
+console.log(global.apppath);
+global.stateHolder = {
+  userList: [],
+  roomData: []
+};
 
 const log4js = require('log4js');
-global.logger = log4js.getLogger();
+log4js.configure({
+    appenders: {
+      all: { type: 'file', filename: 'logs/test.log' , maxLogSize: 10 * 1024 * 1024, backups: 5 }
+    },
+    categories: { default: { appenders: ['all'], level: 'debug' } }
+  });
+global.logger = log4js.getLogger('all');
 
 describe('Server', function() {
-  var router = require('../src/routes.js');
+  var router = require('../src/routes');
   var own = randomstring.generate({
     length: 8,
     charset: 'alphanumeric',
-    capitalization: 'lowervase'
+    capitalization: 'lowercase'
   });
 
-  describe('#default()', function() {
-    it('basic response when server alives', function() {
+  describe('#config()', function() {
+    it('config loading', function() {
+      config_test = requireNew('../src/config.js');
+
+      assert.notEqual(config_test, null);
+    });
+  });
+
+  describe('#routing()', function() {
+    it('no indexes', function() {
       var res = new MockRes();
       var req = new MockReq({
         method: 'GET',
@@ -26,37 +49,120 @@ describe('Server', function() {
       var match = router.match(req.url);
       match.fn(req, res, match);
 
-      assert.equal(res._getString(), "Server alives.");
+      assert.equal(res._getString(), "403 Forbidden.");
     });
-  });
 
-  describe('#getLoginInfos()', function() {
-    it('first request to connect server', function() {
+    it('not found', function() {
       var res = new MockRes();
       var req = new MockReq({
-        method: 'POST',
-        url: '/DodontoFServer',
-        headers: {
-          "Content-Type": "application/x-msgpack"
-        }
+        method: 'GET',
+        url: '/no-exist.txt'
       });
       var match = router.match(req.url);
       match.fn(req, res, match);
 
+      res.end = (data) => {
+        assert.equal(data, "404 Not Found.");
+      }
+    });
+
+    it('illegal mimeType', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'GET',
+        url: '/test.illegal'
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+      assert.equal(res._getString(), "");
+    });
+
+    it('assets', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'GET',
+        url: '/index.txt'
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+      res.end = (data) => {
+        assert.equal(data, "index");
+      };
+    });
+
+    it('not defined command', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer'
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+      res.end = (data) => {
+        assert.equal(data, "\"Server alives.\"");
+      }
+
       req.write(msgpack.encode({
-        cmd: "getLoginInfo",
-        room: 0,
+        cmd: "NotDefined",
+        room: -1,
         params: {
           uniqueId: null
         },
         own: own
       }));
       req.end();
+    });
 
-      
-    	function end(data) {
-        assert.notEqual(data.uniqueId, null);
+    it('post illegal data', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer'
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+      res.end = (data) => {
+        assert.equal(data, "\"sent data is corrupted.\"");
       }
+
+      req.write(msgpack.encode({
+        cmd: "NotDefined",
+        room: -1,
+        params: {
+          uniqueId: null
+        },
+        own: own
+      }).slice(3));
+      req.end();
+    });
+  });
+
+  describe('#default()', function() {
+    it('basic response when server alives', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'GET',
+        url: '/DodontoFServer'
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+      assert.equal(res._getString(), "\"Server alives.\"");
+    });
+  });
+
+
+  describe('#app()', function() {
+    it('app loading', function() {
+      app = require('../index.js');
+
+      assert.ok(true);
+
+      app.close();
     });
   });
 });

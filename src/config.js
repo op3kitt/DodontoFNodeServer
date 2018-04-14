@@ -8,11 +8,19 @@ var config = {
     },
     categories: { default: { appenders: ['all', 'out'], level: 'debug' } }
   },
-
+  loginMessageFiles: ["loginMessage.html", "loginMessageBase.html"],
+  loginTimeOut: 60,
+  defaultUserNames: [],
+  saveDataMaxCount: 10,
+  unremovablePlayRoomNumbers: [0],
+  isPasswordNeedFroDeletePlayRoom: true,
+  createPlayRoomPassword: "",
   server: {
     secure: false,
     port: 8000
-  }
+  },
+  isWelcomeMessageOn: true,
+  isMentenanceModeOn: false
 };
 
 module.exports = Object.assign(config, local_config);

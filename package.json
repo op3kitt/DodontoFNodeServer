@@ -8,27 +8,34 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dateformat": "^3.0.3",
     "log4js": "^2.5.3",
+    "mime": "^2.2.2",
     "msgpack-lite": "^0.1.26",
     "randomstring": "^1.1.5",
     "routes-http": "^0.5.0"
   },
-  "dev-dependencies": {
+  "devDependencies": {
     "mocha": "^3.0.0",
     "mock-res": "^0.5.0",
     "mock-req": "^0.2.0",
-    "nyc": "^11.6.0"
+    "nyc": "^11.6.0",
+    "require-new": "^1.1.1"
   },
   "nyc": {
+    "check-coverage": true,
+    "per-file": false,
+    "functions": 99,
+    "branches": 99,
     "include": [
-      "src/**/*.js",
-      "src/*.js"
+      "src/**/*.js"
     ],
-    "instrument": false,
-    "sourceMap": false
-  },
-  "devDependencies": {
-    "mock-req": "^0.2.0",
-    "mock-res": "^0.5.0"
+    "reporter": [
+      "lcov",
+      "text-summary",
+      "html"
+    ],
+    "all": true
   }
 }
