@@ -8,7 +8,6 @@ const requireNew = require('require-new');
 const path = require('path');
 global.config = require('../src/config.js');
 global.APP_PATH = path.resolve(__dirname+'/..');
-console.log(global.APP_PATH);
 global.stateHolder = {
   userList: [],
   roomData: []
@@ -41,9 +40,35 @@ describe('Cmd', function() {
           "Content-Type": "application/x-msgpack"
         }
       });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
       
       res.end = (data) => {
-        assert.equal("{}", data);
+        data = JSON.parse(data);
+        
+        assert.equal(data.hasOwnProperty('chatMessageDataLog'), true);
+        assert.equal(data.hasOwnProperty('mapData'), true);
+        assert.equal(data.hasOwnProperty('imageTags'), true);
+        assert.equal(data.hasOwnProperty('characters'), true);
+        assert.equal(data.hasOwnProperty('graveyard'), true);
+        assert.equal(data.hasOwnProperty('cardTrushMount'), true);
+        assert.equal(data.hasOwnProperty('cardMount'), true);
+        assert.equal(data.hasOwnProperty('waitingRoom'), true);
+        assert.equal(data.hasOwnProperty('roundTimeData'), true);
+        assert.equal(data.hasOwnProperty('resource'), true);
+        assert.equal(data.hasOwnProperty('effects'), true);
+        assert.equal(data.hasOwnProperty('playRoomName'), true);
+        assert.equal(data.hasOwnProperty('playRoomChangedPassword'), true);
+        assert.equal(data.hasOwnProperty('chatChannelNames'), true);
+        assert.equal(data.hasOwnProperty('canUseExternalImage'), true);
+        assert.equal(data.hasOwnProperty('canVisit'), true);
+        assert.equal(data.hasOwnProperty('gameType'), true);
+        assert.equal(data.hasOwnProperty('viewStateInfo'), true);
+        assert.equal(data.hasOwnProperty('backgroundImage'), true);
+        assert.equal(data.hasOwnProperty('lastUpdateTimes'), true);
+        assert.equal(data.hasOwnProperty('refreshIndex'), true);
+        assert.equal(data.hasOwnProperty('loginUserInfo'), true);
+        assert.equal(data.isFirstChatRefresh, true);
       };
 
       req.write(msgpack.encode({
@@ -52,7 +77,7 @@ describe('Cmd', function() {
         params: {
           rIndex: 0,
           name: "",
-          times:  {
+          times: {
             effects: 0,
             time: 0,
             map: 0,
@@ -78,9 +103,12 @@ describe('Cmd', function() {
           "Content-Type": "application/x-msgpack"
         }
       });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
       
       res.end = (data) => {
-        assert.equal("{}", data);
+        data = JSON.parse(data);
+        assert.equal(data.hasOwnProperty('isFirstChatRefresh', false));
       };
 
       let now = new Date();

@@ -3,7 +3,7 @@
 !.gitkeep
 /node_modules/
 /logs/
-/data/
+/data/save.json
 /config.json
 /.nyc_output/
 /package-lock.json
