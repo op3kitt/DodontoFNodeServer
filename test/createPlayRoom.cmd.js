@@ -6,22 +6,10 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-global.config = require('../src/config.js');
-global.APP_PATH = path.resolve(__dirname+'/..');
-console.log(global.APP_PATH);
-global.stateHolder = {
-  userList: [],
-  roomData: []
-};
-
-const log4js = require('log4js');
-log4js.configure({
-    appenders: {
-      all: { type: 'file', filename: 'logs/test.log' , maxLogSize: 10 * 1024 * 1024, backups: 5 }
-    },
-    categories: { default: { appenders: ['all'], level: 'debug' } }
-  });
-global.logger = log4js.getLogger('all');
+const config = require('../src/config.js');
+config.APP_PATH = path.resolve(__dirname+'/..');
+const stateHolder = require('../src/stateHolder');
+var logger = require('./module/logger');
 
 describe('Cmd', function() {
   var router = require('../src/routes');
@@ -33,7 +21,7 @@ describe('Cmd', function() {
 
   describe('#createPlayRoom()', function() {
     it('create room', function() {
-      global.stateHolder = requireNew('./testData.json')
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -74,7 +62,7 @@ describe('Cmd', function() {
     });
 
     it('create already exists room', function() {
-      global.stateHolder = requireNew('./testData.json')
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -114,7 +102,7 @@ describe('Cmd', function() {
     });
 
     it('create illeagal room', function() {
-      global.stateHolder = requireNew('./testData.json')
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -193,7 +181,7 @@ describe('Cmd', function() {
     });
 
     it('create room with required password mode', function() {
-      global.config.createPlayRoomPassword = "test";
+      config.createPlayRoomPassword = "test";
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -233,7 +221,7 @@ describe('Cmd', function() {
     });
 
     it('create room with incorrect password', function() {
-      global.config.createPlayRoomPassword = "test";
+      config.createPlayRoomPassword = "test";
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',

@@ -1,29 +1,32 @@
 const playRoom = require('../class_PlayRoom');
+const logger = require('../logger');
+const config = require('../config');
+const stateHolder = require('../stateHolder');
 
 module.exports = (req, res, msg) => {
-  global.logger.debug('createPlayRoom begin');
+  logger.debug('createPlayRoom begin');
   let resultText = "OK"
 
   if(msg.params.playRoomIndex == -1){
-    for(let i = 0;i <= global.config.saveDataMaxCount;i++){
-      if(!global.stateHolder.roomData[i]){
+    for(let i = 0;i <= config.saveDataMaxCount;i++){
+      if(!stateHolder.roomData[i]){
         msg.params.playRoomIndex = i;
         break;
       }
     }
   }
 
-  if(0 > msg.params.playRoomIndex || msg.params.playRoomIndex > global.config.saveDataMaxCount){
+  if(0 > msg.params.playRoomIndex || msg.params.playRoomIndex > config.saveDataMaxCount){
     resultText = "noEmptyPlayRoom";
   }else{
     try{
-      if(global.stateHolder.roomData[msg.params.playRoomIndex]){
+      if(stateHolder.roomData[msg.params.playRoomIndex]){
         throw "It is not empty.";
       }
-      if(global.config.createPlayRoomPassword && msg.params.createPassword != global.config.createPlayRoomPassword){
+      if(config.createPlayRoomPassword && msg.params.createPassword != config.createPlayRoomPassword){
         throw "Password is required to create play room.";
       }
-      global.stateHolder.roomData[msg.params.playRoomIndex] = new playRoom(
+      stateHolder.roomData[msg.params.playRoomIndex] = new playRoom(
         msg.params.playRoomIndex,
         msg.params.playRoomName,
         msg.params.playRoomPassword,
@@ -35,7 +38,7 @@ module.exports = (req, res, msg) => {
       );
     }catch(err){
       resultText = err;
-      global.logger.debug(err);
+      logger.debug(err);
     }
   }
 
@@ -46,5 +49,5 @@ module.exports = (req, res, msg) => {
 
   res.end(JSON.stringify(result));
 
-  global.logger.debug('createPlayRoom end:', result);
+  logger.debug('createPlayRoom end:', result);
 }

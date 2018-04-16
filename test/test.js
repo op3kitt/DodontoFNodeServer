@@ -6,14 +6,9 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-global.config = require('../src/config.js');
-global.APP_PATH = path.resolve(__dirname+'/..');
-console.log(global.APP_PATH);
-global.stateHolder = {
-  userList: [],
-  roomData: []
-};
-
+const config = require('../src/config.js');
+config.APPPATH = path.resolve(__dirname+'/..');
+const stateHolder = require('../src/stateHolder');
 const logger = require('./module/logger');
 
 describe('Server', function() {
@@ -22,14 +17,6 @@ describe('Server', function() {
     length: 8,
     charset: 'alphanumeric',
     capitalization: 'lowercase'
-  });
-
-  describe('#config()', function() {
-    it('config loading', function() {
-      config_test = requireNew('../src/config.js');
-
-      assert.notEqual(config_test, null);
-    });
   });
 
   describe('#routing()', function() {
@@ -148,6 +135,59 @@ describe('Server', function() {
     });
   });
 
+  describe('#stateHolder()', function() {
+    it('initialize', function() {
+      var stateHolder = requireNew('../src/stateHolder.js');
+
+      assert.equal(stateHolder.userList.length, 0);
+      assert.equal(stateHolder.roomData.length, 0);
+    });
+
+    it('load saveData', function() {
+      var stateHolder = requireNew('../src/stateHolder.js');
+      stateHolder.load('test/testData.json');
+
+      assert.equal(stateHolder.userList.length, 1);
+    });
+
+    it('load corrupted saveData', function() {
+      var stateHolder = requireNew('../src/stateHolder.js');
+      stateHolder.load('test/testDataCorrupted.json');
+
+      assert.equal(stateHolder.userList.length, 0);
+      assert.equal(stateHolder.roomData.length, 0);
+    });
+
+    it('load no exist saveData', function() {
+      var stateHolder = requireNew('../src/stateHolder.js');
+      stateHolder.load('test/testData_none.json');
+
+      assert.equal(stateHolder.userList.length, 0);
+      assert.equal(stateHolder.roomData.length, 0);
+    });
+  });
+
+  describe('#config()', function() {
+    it('default config loading', function() {
+      var config_test = requireNew('../src/config');
+
+      assert.notEqual(config_test, null);
+    });
+
+    it('file config loading', function() {
+      var config_test = requireNew('../src/config');
+      config_test.load('test/testConfig.json');
+
+      assert.notEqual(config_test, null);
+    });
+
+    it('no-exist config loading', function() {
+      var config_test = requireNew('../src/config');
+      config_test.load('test/testConfig_none.json');
+
+      assert.notEqual(config_test, null);
+    });
+  });
 
   describe('#app()', function() {
     it('app loading', function() {

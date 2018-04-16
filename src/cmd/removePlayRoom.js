@@ -1,6 +1,7 @@
+const logger = require('../logger');
 
 module.exports = (req, res, msg) => {
-  global.logger.debug('removePlayRoomStates start');
+  logger.debug('removePlayRoomStates start');
 
   let deletedRoomNumbers = [];
   let errorMessages = [];
@@ -17,5 +18,5 @@ module.exports = (req, res, msg) => {
 
   res.end(JSON.stringify(result);
 
-  global.logger.debug('removePlayRoomStates end:', result);
+  logger.debug('removePlayRoomStates end:', result);
 }

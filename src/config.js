@@ -1,10 +1,6 @@
-try{
-  var local_config = require("../config.json");
-}catch(err){
-  var local_config = {};
-}
+const fs = require('fs');
 
-var config = {
+module.exports = {
   logger: {
     appenders: {
       out: { type: 'stdout' },
@@ -24,7 +20,16 @@ var config = {
     port: 8000
   },
   isWelcomeMessageOn: true,
-  isMentenanceModeOn: false
+  isMentenanceModeOn: false,
+  load: (file) => {
+    try{
+      let stat = fs.statSync(file);
+      let data = JSON.parse(fs.readFileSync(file));
+      module.exports = Object.assign(config, data);
+    }catch(err){
+
+    }
+  }
 };
 
-module.exports = Object.assign(config, local_config);
+var config = module.exports;

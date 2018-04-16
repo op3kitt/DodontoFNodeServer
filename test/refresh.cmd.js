@@ -6,21 +6,10 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-global.config = require('../src/config.js');
-global.APP_PATH = path.resolve(__dirname+'/..');
-global.stateHolder = {
-  userList: [],
-  roomData: []
-};
-
-const log4js = require('log4js');
-log4js.configure({
-    appenders: {
-      all: { type: 'file', filename: 'logs/test.log' , maxLogSize: 10 * 1024 * 1024, backups: 5 }
-    },
-    categories: { default: { appenders: ['all'], level: 'debug' } }
-  });
-global.logger = log4js.getLogger('all');
+const config = require('../src/config.js');
+config.APP_PATH = path.resolve(__dirname+'/..');
+const stateHolder = require('../src/stateHolder');
+var logger = require('./module/logger');
 
 describe('Cmd', function() {
   var router = require('../src/routes');
@@ -135,6 +124,46 @@ describe('Cmd', function() {
       req.end();
     });
 
+    it('empty room', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer',
+        headers: {
+          "Content-Type": "application/x-msgpack"
+        }
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+      
+      res.end = (data) => {
+        data = JSON.parse(data);
+        assert.equal(data.hasOwnProperty('isFirstChatRefresh', false));
+      };
+
+      let now = new Date();
+      req.write(msgpack.encode({
+        cmd: "refresh",
+        room: 1,
+        params: {
+          rIndex: 1,
+          name: "test",
+          times:  {
+            effects: now.getTime(),
+            time: now.getTime(),
+            map: now.getTime(),
+            chatMessageDataLog: now.getTime(),
+            recordIndex: now.getTime(),
+            characters: now.getTime(),
+            playRoomInfo: now.getTime(),
+            record: now.getTime()
+          }
+        },
+        own: own
+      }));
+
+      req.end();
+    });
 
   });
 });

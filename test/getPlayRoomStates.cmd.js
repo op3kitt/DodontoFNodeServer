@@ -6,22 +6,10 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const path = require('path');
 const requireNew = require('require-new');
-global.config = require('../src/config.js');
-global.APP_PATH = path.resolve(__dirname+'/..');
-console.log(global.APP_PATH);
-global.stateHolder = {
-  userList: [],
-  roomData: []
-};
-
-const log4js = require('log4js');
-log4js.configure({
-    appenders: {
-      all: { type: 'file', filename: 'logs/test.log' , maxLogSize: 10 * 1024 * 1024, backups: 5 }
-    },
-    categories: { default: { appenders: ['all'], level: 'debug' } }
-  });
-global.logger = log4js.getLogger('all');
+const config = require('../src/config.js');
+config.APP_PATH = path.resolve(__dirname+'/..');
+const stateHolder = require('../src/stateHolder');
+var logger = require('./module/logger');
 
 describe('Cmd', function() {
   var router = require('../src/routes');
@@ -33,7 +21,7 @@ describe('Cmd', function() {
 
   describe('#getPlayRoomInfo()', function() {
     it('get room infomations', function() {
-      global.stateHolder = requireNew('./testData.json')
+      stateHolder.load('test/testData.json');
 
       var res = new MockRes();
       var req = new MockReq({
