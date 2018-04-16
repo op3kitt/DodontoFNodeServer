@@ -2,7 +2,9 @@ const routes = require('routes')();
 const msgpack = require('msgpack-lite');
 const fs = require('fs');
 const mime = require('mime');
-
+const logger = require('./logger');
+const config = require('./config');
+const stateHolder = require('./stateHolder');
 var defaultRoute = (req, res) => {
   res.setHeader("Content-Type", "text/plain");
   res.end("\"Server alives.\"");
@@ -17,13 +19,13 @@ routes.addRoute('/DodontoFServer(\.rb)?', (req, res) => {
       req.on('data', (data) => {
         try{
           var msg = msgpack.decode(data);
-          global.logger.debug("request:" , msg);
+          logger.debug("request:" , msg);
           
           if(typeof msg == "object"){
             res.setHeader("Content-Type", "application/json");
             require(`./cmd/${msg.cmd}`)(req, res, msg);
 
-            global.stateHolder.userList.push({
+            stateHolder.userList.push({
               own: msg.own,
               room: msg.room,
               lastLoginTime: new Date().getTime()
@@ -32,7 +34,7 @@ routes.addRoute('/DodontoFServer(\.rb)?', (req, res) => {
             throw "sent data is corrupted."
           }
         }catch(e){
-          global.logger.debug(e);
+          logger.debug(e);
           if (e.code == 'MODULE_NOT_FOUND') {
             defaultRoute(req, res);
           }else{
@@ -46,14 +48,14 @@ routes.addRoute('/DodontoFServer(\.rb)?', (req, res) => {
 });
 
 routes.addRoute('*.*', (req, res, data) => {
-  global.logger.debug(data);
+  logger.debug(data);
 
-  let file = `${global.APP_PATH}/assets${data.splats.join(".")}`;
+  let file = `${config.APP_PATH}/assets${data.splats.join(".")}`;
   let mimeType = mime.getType(data.splats[1]);
 
   fs.stat(file, (err, stat) => {
     if(!mimeType || err) {
-      global.logger.debug(err);
+      logger.debug(err);
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end("404 Not Found.");
     }else{

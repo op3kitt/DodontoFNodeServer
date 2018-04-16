@@ -1,3 +1,5 @@
+const config = require('./config');
+
 class PlayRoom{
   constructor(roomNumber, playRoomName, playRoomPassword, gameType, canVisit, canUseExternalImage, chatChannelNames, viewStates){
     this.roomNumber = roomNumber;
@@ -38,20 +40,20 @@ class PlayRoom{
 
   /*remove(ignoreLoginUser, password, isForce){
 
-    if(global.config.unremovablePlayRoomNumbers.includes(this.roomNumber)){
+    if(config.unremovablePlayRoomNumbers.includes(this.roomNumber)){
       return "unremovablePlayRoomNumber";
     }
 
     if(!ignoreLoginUser){
       this.data.login = this.data.login.filter(
-        item => item.timeSeconds > new Date().getTime() - global.config.loginTimeOut * 1000
+        item => item.timeSeconds > new Date().getTime() - config.loginTimeOut * 1000
       );
       if(this.data.login.length > 0){
         return "userExist"
       }
     }
 
-    if(this.playRoomInfo.playRoomPassword && global.config.isPasswordNeedFroDeletePlayRoom){
+    if(this.playRoomInfo.playRoomPassword && config.isPasswordNeedFroDeletePlayRoom){
 
     }
 

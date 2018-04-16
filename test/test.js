@@ -6,15 +6,10 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-global.config = require('../src/config.js');
-global.APP_PATH = path.resolve(__dirname+'/..');
-console.log(global.APP_PATH);
-global.stateHolder = {
-  userList: [],
-  roomData: []
-};
-
-const logger = require('./module/logger');
+const config = require('../src/config.js');
+config.APPPATH = path.resolve(__dirname+'/..');
+const stateHolder = require('../src/stateHolder');
+var logger = require('./module/logger');
 
 describe('Server', function() {
   var router = require('../src/routes');

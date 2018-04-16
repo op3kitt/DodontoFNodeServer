@@ -1,7 +1,9 @@
-var dateFormat = require('dateformat');
+const dateFormat = require('dateformat');
+const logger = require('../logger');
+const stateHolder = require('../stateHolder');
 
 module.exports = (req, res, msg) => {
-  global.logger.debug('getPlayRoomState start');
+  logger.debug('getPlayRoomState start');
 
   let min = msg.params.minRoom;
   let max = msg.params.maxRoom;
@@ -10,8 +12,8 @@ module.exports = (req, res, msg) => {
 
   let roomList = [];
   for(let i = min;i <= max;i++){
-    if(global.stateHolder.roomData[i]){
-      room = global.stateHolder.roomData[i].data;
+    if(stateHolder.roomData[i]){
+      room = stateHolder.roomData[i].data;
       roomList.push({
         canVisit: room.playRoomInfo.canVisit,
         gameType: room.playRoomInfo.gameType,
@@ -40,6 +42,6 @@ module.exports = (req, res, msg) => {
     playRoomStates: roomList
   };
 
-  global.logger.debug('getPlayRoomStates end:', result);
+  logger.debug('getPlayRoomStates end:', result);
   res.end(JSON.stringify(result));
 }

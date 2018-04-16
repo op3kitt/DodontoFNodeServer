@@ -1,7 +1,9 @@
 const crypt = require('bcryptjs');
+const logger = require('../logger');
+const stateHolder = require('../stateHolder');
 
 module.exports = (req, res, msg) => {
-  global.logger.debug('loginPassword start');
+  logger.debug('loginPassword start');
 
   let roomNumber = msg.params.roomNumber;
 
@@ -12,8 +14,8 @@ module.exports = (req, res, msg) => {
     roomNumber: roomNumber,
   };
 
-  if(global.stateHolder.roomData[roomNumber]){
-    room = global.stateHolder.roomData[roomNumber].data.playRoomInfo;
+  if(stateHolder.roomData[roomNumber]){
+    room = stateHolder.roomData[roomNumber].data.playRoomInfo;
     if(room.canVisit && msg.params.visiterMode){
       result.resultText = "OK";
       result.visiterMode = true;
@@ -28,6 +30,6 @@ module.exports = (req, res, msg) => {
     result.resultText = `プレイルームNo.${roomNumber}は作成されていません`;
   }
 
-  global.logger.debug('loginPassword end:', result);
+  logger.debug('loginPassword end:', result);
   res.end(JSON.stringify(result));
 }
