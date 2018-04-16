@@ -7,8 +7,8 @@ const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
 global.config = require('../src/config.js');
-global.apppath = path.resolve(__dirname+'/..');
-console.log(global.apppath);
+global.APP_PATH = path.resolve(__dirname+'/..');
+console.log(global.APP_PATH);
 global.stateHolder = {
   userList: [],
   roomData: []

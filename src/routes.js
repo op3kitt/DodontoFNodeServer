@@ -48,7 +48,7 @@ routes.addRoute('/DodontoFServer(\.rb)?', (req, res) => {
 routes.addRoute('*.*', (req, res, data) => {
   global.logger.debug(data);
 
-  let file = `${global.apppath}/assets${data.splats.join(".")}`;
+  let file = `${global.APP_PATH}/assets${data.splats.join(".")}`;
   let mimeType = mime.getType(data.splats[1]);
 
   fs.stat(file, (err, stat) => {

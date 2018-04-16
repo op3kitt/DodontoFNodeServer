@@ -6,7 +6,7 @@ const log4js = require('log4js');
 const fs = require('fs');
 log4js.configure(global.config.logger);
 global.logger = log4js.getLogger('all');
-global.apppath = __dirname;
+global.APP_PATH = __dirname;
 
 const server = http.createServer((req, res) => {
   var path = url.parse(req.url).pathname;
@@ -20,7 +20,7 @@ global.stateHolder = {
   roomData: []
 };
 
-file = `${global.apppath}/data/save.json`;
+file = `${global.APP_PATH}/data/save.json`;
 fs.stat(file, (err, stat) => {
   if(!err){
     try{
@@ -49,6 +49,6 @@ server.on('close', () => {
 });
 
 setInterval(() => {
-  file = `${global.apppath}/data/save.json`;
+  file = `${global.APP_PATH}/data/save.json`;
   fs.writeFileSync(file, JSON.stringify(global.stateHolder));
 },15000);

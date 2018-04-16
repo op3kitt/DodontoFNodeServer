@@ -72,7 +72,7 @@ function getLoginMessage(){
   if(!global.LoginMessage){
     let output = "";
     for(file of global.config.loginMessageFiles){
-      output += fs.readFileSync(`${global.apppath}/content/${file}`);
+      output += fs.readFileSync(`${global.APP_PATH}/content/${file}`);
     }
     global.LoginMessage = output;
   }
