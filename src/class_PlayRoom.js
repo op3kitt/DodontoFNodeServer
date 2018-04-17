@@ -4,8 +4,29 @@ class PlayRoom{
   constructor(roomNumber, playRoomName, playRoomPassword, gameType, canVisit, canUseExternalImage, chatChannelNames, viewStates){
     this.roomNumber = roomNumber;
     this.data = {
-      login: [],
-      chat: [],
+      login: {},
+      chatMessageDataLog: [],
+      roundTimeData: {
+        initiative: 0.0,
+        round: 1.0,
+        counterNames: ["HP", "*“]“|"]
+      },
+      characters: [],
+      mapData: {
+        mapType: "imageGraphic",
+        imageSource: "image/whiteBack.png",
+        mirrored: false,
+        xMax: 20,
+        yMax: 20,
+        mapMarks: [],
+        mapMarksAlpha: 1.0,
+        isAlternately: false,
+        gridColor: 0,
+        draws: [],
+        gridInterval: 1
+      },
+      record: [],
+      effects: [],
       playRoomInfo: {
         playRoomName: playRoomName,
         playRoomPassword: playRoomPassword,
@@ -33,7 +54,12 @@ class PlayRoom{
         },
         backgroundImage: null
       },
-      lastUpdatedTime: new Date()
+      lastUpdateTimes: {
+        map: new Date().getTime(),
+        effects: new Date().getTime(),
+        time: new Date().getTime(),
+        playRoomInfo: new Date().getTime()
+      }
     };
     this.data.playRoomInfo.viewStateInfo = Object.assign(this.data.playRoomInfo.viewStateInfo, viewStates);
   };
