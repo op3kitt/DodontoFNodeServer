@@ -11,7 +11,12 @@ class PlayRoom{
         round: 1.0,
         counterNames: ["HP", "*“]“|"]
       },
+      resource: [],
       characters: [],
+      graveyard: [],
+      waitingRoom: [],
+      cardTrushMount: {},
+      cardMount: {},
       mapData: {
         mapType: "imageGraphic",
         imageSource: "image/whiteBack.png",

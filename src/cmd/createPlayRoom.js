@@ -2,6 +2,7 @@ const playRoom = require('../class_PlayRoom');
 const logger = require('../logger');
 const config = require('../config');
 const stateHolder = require('../stateHolder');
+const crypt = require('bcryptjs');
 
 module.exports = (req, res, msg) => {
   logger.debug('createPlayRoom begin');
@@ -20,6 +21,9 @@ module.exports = (req, res, msg) => {
     resultText = "noEmptyPlayRoom";
   }else{
     try{
+      if(msg.params.playRoomPassword != ""){
+        msg.params.playRoomPassword = crypt.hashSync(msg.params.playRoomPassword, 10);
+      }
       if(stateHolder.roomData[msg.params.playRoomIndex]){
         throw "It is not empty.";
       }

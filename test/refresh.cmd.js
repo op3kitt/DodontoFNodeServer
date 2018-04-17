@@ -20,6 +20,7 @@ describe('Cmd', function() {
   });
 
   describe('#refresh()', function() {
+    stateHolder.load("test/testData.json");
     it('rIndex is 0', function() {
       var res = new MockRes();
       var req = new MockReq({
@@ -47,7 +48,7 @@ describe('Cmd', function() {
         assert.equal(data.hasOwnProperty('resource'), true);
         assert.equal(data.hasOwnProperty('effects'), true);
         assert.equal(data.hasOwnProperty('playRoomName'), true);
-        assert.equal(data.hasOwnProperty('playRoomChangedPassword'), true);
+        assert.equal(data.hasOwnProperty('playRoomPassword'), true);
         assert.equal(data.hasOwnProperty('chatChannelNames'), true);
         assert.equal(data.hasOwnProperty('canUseExternalImage'), true);
         assert.equal(data.hasOwnProperty('canVisit'), true);
@@ -97,7 +98,7 @@ describe('Cmd', function() {
       
       res.end = (data) => {
         data = JSON.parse(data);
-        assert.equal(data.hasOwnProperty('isFirstChatRefresh', false));
+        assert.equal(data.hasOwnProperty('isFirstChatRefresh'), false);
       };
 
       let now = new Date();
@@ -138,7 +139,7 @@ describe('Cmd', function() {
       
       res.end = (data) => {
         data = JSON.parse(data);
-        assert.equal(data.hasOwnProperty('isFirstChatRefresh', false));
+        assert.equal(data.hasOwnProperty('isFirstChatRefresh'), false);
       };
 
       let now = new Date();
