@@ -6,7 +6,6 @@ module.exports = (req, res, msg) => {
   let result = {};
   if(stateHolder.roomData[msg.room]){
     room = stateHolder.roomData[msg.room].data;
-    logger.debug(room);
     
     result.imageTags = {};
     if(room.lastUpdateTimes.playRoomInfo > msg.params.times.playRoomInfo){
@@ -21,9 +20,9 @@ module.exports = (req, res, msg) => {
           }
           result[item] = room[item].filter((v)=>{return v[0] > msg.params.times[item];});
         break;
-        case "record":
+        case "recordIndex":
           if(msg.params.times[item] > 0){
-            result[item] = room.record.filter((v)=>{return v[0] > msg.params.times[item];});
+            result.record = room.record.filter((v)=>{return v[0] > msg.params.times[item];});
           }
         break;
         case "characters":
@@ -61,7 +60,8 @@ module.exports = (req, res, msg) => {
       recordIndex: room.record.length,
       characters: datenum,
       playRoomInfo: datenum,
-      record: datenum
+      record: datenum,
+      recordIndex: room.record.length > 0?room.record.slice(-1).pop()[0]:0
     };
     result.loginUserInfo = {};
   }

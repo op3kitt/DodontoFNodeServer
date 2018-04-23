@@ -9,7 +9,7 @@ class PlayRoom{
       roundTimeData: {
         initiative: 0.0,
         round: 1.0,
-        counterNames: ["HP", "*“]“|"]
+        counterNames: ["HP", "*è»¢å€’"]
       },
       resource: [],
       characters: [],

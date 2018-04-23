@@ -20,8 +20,8 @@ describe('Cmd', function() {
   });
 
   describe('#refresh()', function() {
-    stateHolder.load("test/testData.json");
     it('rIndex is 0', function() {
+      stateHolder.load("test/testData.json");
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -63,7 +63,7 @@ describe('Cmd', function() {
 
       req.write(msgpack.encode({
         cmd: "refresh",
-        room: 0,
+        room: 3,
         params: {
           rIndex: 0,
           name: "",
@@ -154,7 +154,7 @@ describe('Cmd', function() {
             time: now.getTime(),
             map: now.getTime(),
             chatMessageDataLog: now.getTime(),
-            recordIndex: now.getTime(),
+            recordIndex: 0,
             characters: now.getTime(),
             playRoomInfo: now.getTime(),
             record: now.getTime()
