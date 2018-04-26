@@ -4,56 +4,74 @@ const version = require('../../package.json').version;
 const logger = require('../logger');
 const config = require('../config');
 const stateHolder = require('../stateHolder');
+const http = require('http');
 
 module.exports = (req, res, msg) => {
   logger.debug('getLoginInfo begin');
 
-  uniqueId = msg.params.uniqueId;
-  uniqueId || (uniqueId = createUniqueId());
-  msg.own += "\t" + uniqueId;
+  let URL = `${config.bcdiceUrl}DodontoF/getDiceBotInfos`;
+console.log(URL);
+  http.get(URL, (res2) => {
+    let body = '';
+    res2.setEncoding('utf8');
 
-  result = {
-    loginMessage: getLoginMessage(),
-    uniqueId: uniqueId,
-    allLoginCount: getLoginCount(),
-    cardInfos: null,
-    isDiceBotOn: null,
-    refreshTimeout: null,
-    refreshInterval: 3,
-    isCommet: null,
-    version: version,
-    playRoomMaxNumber: config.saveDataMaxCount,
-    warning: null,
-    playRoomGetRangeMax: 10,
-    limitLoginCount: null,
-    loginUserCountList: [],
-    maxLoginCount: null,
-    skinImage: null,
-    isPaformanceMonitor: null,
-    fps: null,
-    loginTimeLimitSecond: null,
-    removeOldPlayRoomLimitDays: null,
-    canTalk: null,
-    retryCountLimit: null,
-    imageUploadDirInfo: null,
-    mapMaxWidth: null,
-    mapMaxHeigth: null,
-    diceBotInfos: [],
-    isNeedCreatePassword: null,
-    defaultUserNames: config.defaultUserNames,
-    drawLineCountLimit: null,
-    logoutUrl: null,
-    languages: null,
-    canUseExternalImageModeOn: null,
-    characterInfoToolTipMax: null,
-    isAskRemoveRoomWhenLogout: null,
-    canUploadImageOnPublic: null,
-    wordChecker: null,
-    errorMessage: null
-  };
+    res2.on('data', (chunk) => {
+        body += chunk;
+    });
 
-  logger.debug("getLoginInfo end:", result)
-  res.end(JSON.stringify(result));
+    res2.on('end', (res3) => {
+      uniqueId = msg.params.uniqueId;
+      uniqueId || (uniqueId = createUniqueId());
+      msg.own += "\t" + uniqueId;
+
+      result = {
+        loginMessage: getLoginMessage(),
+        uniqueId: uniqueId,
+        allLoginCount: getLoginCount(),
+        cardInfos: null,
+        isDiceBotOn: null,
+        refreshTimeout: null,
+        refreshInterval: 3,
+        isCommet: null,
+        version: version,
+        playRoomMaxNumber: config.saveDataMaxCount,
+        warning: null,
+        playRoomGetRangeMax: 10,
+        limitLoginCount: null,
+        loginUserCountList: [],
+        maxLoginCount: null,
+        skinImage: null,
+        isPaformanceMonitor: null,
+        fps: null,
+        loginTimeLimitSecond: null,
+        removeOldPlayRoomLimitDays: null,
+        canTalk: null,
+        retryCountLimit: null,
+        imageUploadDirInfo: null,
+        mapMaxWidth: null,
+        mapMaxHeigth: null,
+        diceBotInfos: JSON.parse(body),
+        isNeedCreatePassword: null,
+        defaultUserNames: config.defaultUserNames,
+        drawLineCountLimit: null,
+        logoutUrl: null,
+        languages: null,
+        canUseExternalImageModeOn: null,
+        characterInfoToolTipMax: null,
+        isAskRemoveRoomWhenLogout: null,
+        canUploadImageOnPublic: null,
+        wordChecker: null,
+        errorMessage: null
+      };
+
+      res.end(JSON.stringify(result));
+    });
+  }).on('error', (e) => {
+    console.log(e.message); //ƒGƒ‰[Žž
+  }).on('close', (e) => {
+    logger.debug("getLoginInfo end:");
+  });
+
 };
 
 function createUniqueId(){

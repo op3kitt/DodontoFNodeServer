@@ -28,7 +28,8 @@ module.exports = {
     }catch(err){
 
     }
-  }
+  },
+  bcdiceUrl: "http://127.0.0.1:8001/",
 };
 
 var config = module.exports;
