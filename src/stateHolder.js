@@ -8,7 +8,7 @@ module.exports = {
     try{
       let stat = fs.statSync(file);
       let data = JSON.parse(fs.readFileSync(file));
-      module.exports = Object.assign(stateHolder, data);
+      module.exports.roomData = Object.assign(stateHolder, data);
     }catch(err){
       logger.error(err);
     }

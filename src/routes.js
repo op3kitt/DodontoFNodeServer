@@ -5,6 +5,7 @@ const mime = require('mime');
 const logger = require('./logger');
 const config = require('./config');
 const stateHolder = require('./stateHolder');
+
 var defaultRoute = (req, res) => {
   res.setHeader("Content-Type", "text/plain");
   res.end("\"Server alives.\"");
@@ -25,11 +26,24 @@ routes.addRoute('/DodontoFServer(\.rb)?', (req, res) => {
             res.setHeader("Content-Type", "application/json");
             require(`./cmd/${msg.cmd}`)(req, res, msg);
 
-            stateHolder.userList.push({
-              own: msg.own,
-              room: msg.room,
-              lastLoginTime: new Date().getTime()
-            });
+            let user;
+            if(user = stateHolder.userList.find((item) => {return item.own == msg.own;})){
+              user.room = msg.room;
+              if(user.lastLoginTime != -1){
+                user.lastLoginTime = new Date().getTime();
+              }
+            }else{
+              user = {
+                own: msg.own,
+                room: msg.room,
+                lastLoginTime: new Date().getTime()
+              };
+              stateHolder.userList.push(user);
+            }
+            if(req.wsconnection){
+              user.lastLoginTime = -1;
+              user.wsconnection = req.wsconnection;
+            }
           }else{
             throw "sent data is corrupted."
           }

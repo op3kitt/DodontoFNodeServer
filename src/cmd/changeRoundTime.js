@@ -1,5 +1,6 @@
 const logger = require('../logger');
 const statHolder = require('../stateHolder');
+const sender = require('../messageSender');
 
 module.exports = (req, res, msg) => {
   logger.debug('changeRoundtime start');
@@ -10,6 +11,7 @@ module.exports = (req, res, msg) => {
     if(isFinite(msg.params.round) && isFinite(msg.params.initiative) && Array.isArray(msg.params.counterNames)){
       room.roundTimeData = msg.params;
       room.lastUpdateTimes.time = new Date().getTime();
+      sender(msg.room, {roundTimeData: room.roundTimeData});
     }
   }
   let result = [null];

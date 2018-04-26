@@ -18,6 +18,10 @@ module.exports = {
     secure: false,
     port: 8000
   },
+  wsserver: {
+    secure: false,
+    port: 8002
+  },
   isWelcomeMessageOn: true,
   isMentenanceModeOn: false,
   load: (file) => {

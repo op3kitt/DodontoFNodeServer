@@ -1,5 +1,6 @@
 const logger = require('../logger');
 const stateHolder = require('../stateHolder');
+const sender = require('../messageSender');
 
 module.exports = (req, res, msg) => {
   logger.debug('moveCharacter start');
@@ -10,12 +11,14 @@ module.exports = (req, res, msg) => {
     if(character && isFinite(msg.params.x) && isFinite(msg.params.y)){
       character.x = parseFloat(msg.params.x);
       character.y = parseFloat(msg.params.y);
-      room.record.push([
+      let data = [
         room.record.slice(-1).pop()[0]+1,
         "changeCharacter",
         [character],
         msg.own
-      ]);
+      ];
+      sender(msg.room, {record: [data]});
+      room.record.push(data);
     }
   }
 

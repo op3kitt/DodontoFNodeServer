@@ -83,9 +83,6 @@ function createUniqueId(){
 }
 
 function getLoginCount(){
-  stateHolder.userList = stateHolder.userList.filter(
-    item => item.lastLoginTime > new Date().getTime() - config.loginTimeOut * 1000
-  );
   return stateHolder.userList.length;
 }
 

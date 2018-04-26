@@ -1,5 +1,6 @@
 const logger = require('../logger');
 const stateHolder = require('../stateHolder');
+const sender = require('../messageSender');
 
 module.exports = (req, res, msg) => {
   logger.debug('sendChatMessage start');
@@ -12,7 +13,7 @@ module.exports = (req, res, msg) => {
         msg.params.uniqueId = "dummy";
       }
 
-      room.chatMessageDataLog.push([
+      let data = [
         new Date().getTime(),
         {
           uniqueId: msg.params.uniqueId,
@@ -21,13 +22,15 @@ module.exports = (req, res, msg) => {
           message: msg.params.message,
           color: msg.params.color
         }
-      ]);
+      ];
+      sender(msg.room, {chatMessageDataLog: [data]});
+      room.chatMessageDataLog.push(data);
     }
   }
 
   let result = [null];
 
-  logger.debug(JSON.stringify(result));
+  res.end(JSON.stringify(result));
 
   logger.debug('sendChatMessage end:', result);
 }

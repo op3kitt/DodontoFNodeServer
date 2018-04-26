@@ -2,6 +2,7 @@ const logger = require('../logger');
 const http = require('http');
 const config = require('../config');
 const stateHolder = require('../stateHolder');
+const sender = require('../messageSender');
 
 module.exports = (req, res, msg) => {
   logger.debug('sendDiceBotChatMessage start');
@@ -27,7 +28,8 @@ module.exports = (req, res, msg) => {
 
           res2.on('end', (res3) => {
             let data = JSON.parse(body);
-            room.chatMessageDataLog.push([
+            
+            let wsdata = [
               new Date().getTime(),
               {
                 uniqueId: msg.params.uniqueId,
@@ -37,7 +39,9 @@ module.exports = (req, res, msg) => {
                 color: msg.params.color,
                 isServerSide: true
               }
-            ]);
+            ];
+            wsdata && sender(msg.room, {chatMessageDataLog: [wsdata]});
+            room.chatMessageDataLog.push(wsdata);
           });
         }).on('error', (e) => {
           logger.debug(e.message); //ƒGƒ‰[

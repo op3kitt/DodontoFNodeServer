@@ -2,6 +2,7 @@ const logger = require('../logger');
 const config = require('../config');
 const stateHolder = require('../stateHolder');
 const randomstring = require('randomstring');
+const sender = require('../messageSender');
 
 module.exports = (req, res, msg) => {
   logger.debug('addCharacter begin');
@@ -15,12 +16,15 @@ module.exports = (req, res, msg) => {
     }else{
       msg.params.imgId = "character_" + randomstring.generate(16);
       room.characters.push(msg.params);
-      room.record.push([
+      let data = [
         room.record.length>0?room.record.slice(-1).pop()[0]+1:1,
         "addCharacter",
         [msg.params],
         msg.own
-      ]);
+      ];
+      
+      sender(msg.room, {record: [data]});
+      room.record.push(data);
     }
     let result = {
       addFailedCharacterNames: addFailedCharacterNames
