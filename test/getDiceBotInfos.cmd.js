@@ -1,11 +1,12 @@
 const assert = require('assert');
 const http = require('http');
+const nock = require('nock');
 const MockRes = require('mock-res');
 const MockReq = require('mock-req');
 const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
-const path = require('path');
 const requireNew = require('require-new');
+const path = require('path');
 const config = require('./module/config.js');
 config.APP_PATH = path.resolve(__dirname+'/..');
 const stateHolder = require('../src/stateHolder');
@@ -16,13 +17,11 @@ describe('Cmd', function() {
   var own = randomstring.generate({
     length: 8,
     charset: 'alphanumeric',
-    capitalization: 'lowervase'
+    capitalization: 'lowercase'
   });
 
-  describe('#getPlayRoomInfo()', function() {
-    it('get room infomations', function() {
-      stateHolder.load('test/testData.json');
-
+  describe('#getDiceBotInfos()', function() {
+    it('basic request', function() {
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -35,26 +34,25 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-        assert.equal(data.minRoom, 0);
-        assert.equal(data.maxRoom, 9);
-        assert.equal(data.playRoomStates.length, 10);
+        assert.equal(data, '[]');
       };
 
+      nock('http://nock')
+       .get('/DodontoF/getDiceBotInfos')
+       .reply(200, []);
       req.write(msgpack.encode({
-        cmd: "getPlayRoomStates",
+        cmd: "getDiceBotInfos",
         room: -1,
         params: {
-          minRoom: 0,
-          maxRoom: 9
+          uniqueId: null
         },
         own: own
       }));
       req.end();
 
+      
     });
-
-    it('if illegal room numbers given', function() {
+    it('bcdiced is down', function() {
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -67,24 +65,23 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data.minRoom, 9);
-        assert.equal(data.maxRoom, 9);
-        assert.equal(data.playRoomStates.length, 1);
+        assert.ok(true);
       };
 
+      nock('http://nock')
+       .get('/DodontoF/getDiceBotInfos')
+       .replyWithError('something awful happened');
       req.write(msgpack.encode({
-        cmd: "getPlayRoomStates",
+        cmd: "getDiceBotInfos",
         room: -1,
         params: {
-          minRoom: 15,
-          maxRoom: 9
+          uniqueId: null
         },
         own: own
       }));
       req.end();
 
+      
     });
   });
 });

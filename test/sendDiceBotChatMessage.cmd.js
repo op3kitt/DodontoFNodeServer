@@ -1,5 +1,6 @@
 const assert = require('assert');
 const http = require('http');
+const nock = require('nock');
 const MockRes = require('mock-res');
 const MockReq = require('mock-req');
 const msgpack = require('msgpack-lite');
@@ -19,9 +20,9 @@ describe('Cmd', function() {
     capitalization: 'lowercase'
   });
 
-  describe('#sendChatMessage()', function() {
-    it('send message', function() {
-      stateHolder.load("test/testData.json");
+  describe('#sendDiceBotChatMessage()', function() {
+    it('dice command', function() {
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -34,68 +35,29 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 2);
+        assert.equal('[]', data);
       };
 
+      nock('http://nock')
+       .get(/.*/)
+       .reply(200, {result: "[1, 1] -> 2", dices: [[1,6],[1,6]]});
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 0,
         params: {
-          uniqueId: own,
           channel: 0,
+          repeatCount: 0,
+          name: "test",
+          message: "2d6",
           color: "000000",
-          message: "test",
-          senderName: "test"
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));
       req.end();
-    });
-
-    it('send dummy message', function() {
-      stateHolder.load("test/testData.json");
-      var res = new MockRes();
-      var req = new MockReq({
-        method: 'POST',
-        url: '/DodontoFServer',
-        headers: {
-          "Content-Type": "application/x-msgpack"
-        }
-      });
-      var match = router.match(req.url);
-      match.fn(req, res, match);
-
-    	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 2);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog[1][1].uniqueId, "dummy");
-      };
-
-      req.write(msgpack.encode({
-        cmd: "sendChatMessage",
-        room: 0,
-        params: {
-          uniqueId: own,
-          channel: 0,
-          color: "000000",
-          message: "test",
-          senderName: "test",
-          dummy: true
-        },
-        own: own
-      }));
-      req.end();
-
-      
     });
 
     it('empty room', function() {
-      stateHolder.load("test/testData.json");
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -108,20 +70,19 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
+        assert.equal('[]', data);
       };
 
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 1,
         params: {
-          uniqueId: own,
           channel: 0,
+          repeatCount: 1,
+          name: "test",
+          message: "2d6",
           color: "000000",
-          message: "test",
-          senderName: "test"
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));
@@ -130,8 +91,8 @@ describe('Cmd', function() {
       
     });
 
-    it('no channel', function() {
-      stateHolder.load("test/testData.json");
+    it('wrong channel', function() {
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -144,28 +105,27 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 1);
+        assert.equal('[]', data);
       };
 
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 0,
         params: {
-          uniqueId: own,
+          channel: "aa",
+          repeatCount: 0,
+          name: "test",
+          message: "2d6",
           color: "000000",
-          message: "test",
-          senderName: "test"
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));
       req.end();
     });
 
-    it('no message', function() {
-      stateHolder.load("test/testData.json");
+    it('wrong repeatCount', function() {
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -178,30 +138,27 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 1);
+        assert.equal('[]', data);
       };
 
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 0,
         params: {
           channel: 0,
-          uniqueId: own,
+          repeatCount: "aa",
+          name: "test",
+          message: "2d6",
           color: "000000",
-          senderName: "test"
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));
       req.end();
-
-      
     });
 
-    it('no color', function() {
-      stateHolder.load("test/testData.json");
+    it('wrong name', function() {
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -214,29 +171,26 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 1);
+        assert.equal('[]', data);
       };
 
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 0,
         params: {
           channel: 0,
-          uniqueId: own,
-          message: "test",
-          senderName: "test"
+          repeatCount: 0,
+          message: "2d6",
+          color: "000000",
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));
       req.end();
-
-      
     });
-    it('no name', function() {
-      stateHolder.load("test/testData.json");
+
+    it('wrong message', function() {
+      stateHolder.load('test/testData.json');
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -249,20 +203,117 @@ describe('Cmd', function() {
       match.fn(req, res, match);
 
     	res.end = (data) => {
-        data = JSON.parse(data);
-
-        assert.equal(data[0], null);
-        assert.equal(stateHolder.roomData[0].data.chatMessageDataLog.length, 1);
+        assert.equal('[]', data);
       };
 
       req.write(msgpack.encode({
-        cmd: "sendChatMessage",
+        cmd: "sendDiceBotChatMessage",
         room: 0,
         params: {
           channel: 0,
-          uniqueId: own,
+          repeatCount: 0,
+          name: "test",
           color: "000000",
-          message: "test",
+          gameType: "DefaultDiceBot"
+        },
+        own: own
+      }));
+      req.end();
+    });
+
+    it('wrong color', function() {
+      stateHolder.load('test/testData.json');
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer',
+        headers: {
+          "Content-Type": "application/x-msgpack"
+        }
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+    	res.end = (data) => {
+        assert.equal('[]', data);
+      };
+
+      req.write(msgpack.encode({
+        cmd: "sendDiceBotChatMessage",
+        room: 0,
+        params: {
+          channel: 0,
+          repeatCount: 0,
+          name: "test",
+          message: "2d6",
+          gameType: "DefaultDiceBot"
+        },
+        own: own
+      }));
+      req.end();
+    });
+
+    it('wrong gameType', function() {
+      stateHolder.load('test/testData.json');
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer',
+        headers: {
+          "Content-Type": "application/x-msgpack"
+        }
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+    	res.end = (data) => {
+        assert.equal('[]', data);
+      };
+
+      req.write(msgpack.encode({
+        cmd: "sendDiceBotChatMessage",
+        room: 0,
+        params: {
+          channel: 0,
+          repeatCount: 0,
+          name: "test",
+          message: "2d6",
+          color: "000000",
+        },
+        own: own
+      }));
+      req.end();
+    });
+
+    it('bcdiced is down', function() {
+      var res = new MockRes();
+      var req = new MockReq({
+        method: 'POST',
+        url: '/DodontoFServer',
+        headers: {
+          "Content-Type": "application/x-msgpack"
+        }
+      });
+      var match = router.match(req.url);
+      match.fn(req, res, match);
+
+    	res.end = (data) => {
+        assert.ok(true);
+      };
+
+      nock('http://nock')
+       .get(/\/DodontoF\/sendDiceBotChatMessage\/.*/)
+       .replyWithError('something awful happened');
+      req.write(msgpack.encode({
+        cmd: "sendDiceBotChatMessage",
+        room: 0,
+        params: {
+          channel: 0,
+          repeatCount: 1,
+          name: "test",
+          message: "2d6",
+          color: "000000",
+          gameType: "DefaultDiceBot"
         },
         own: own
       }));

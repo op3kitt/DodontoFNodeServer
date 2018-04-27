@@ -19,8 +19,8 @@ describe('Cmd', function() {
     capitalization: 'lowercase'
   });
 
-  describe('#getLoginInfos()', function() {
-    it('first request to connect server', function() {
+  describe('#getImageTagsAndImageList()', function() {
+    it('mock', function() {
       var res = new MockRes();
       var req = new MockReq({
         method: 'POST',
@@ -34,11 +34,15 @@ describe('Cmd', function() {
 
     	res.end = (data) => {
         data = JSON.parse(data);
+
+        assert.equal(data.hasOwnProperty('imageDir'),true);
+        assert.equal(data.hasOwnProperty('imageList'),true);
+        assert.equal(data.hasOwnProperty('tagInfos'),true);
       };
 
       req.write(msgpack.encode({
-        cmd: "getLoginInfo",
-        room: -1,
+        cmd: "getImageTagsAndImageList",
+        room: 0,
         params: {
           uniqueId: null
         },

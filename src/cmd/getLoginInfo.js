@@ -10,7 +10,6 @@ module.exports = (req, res, msg) => {
   logger.debug('getLoginInfo begin');
 
   let URL = `${config.bcdiceUrl}DodontoF/getDiceBotInfos`;
-console.log(URL);
   http.get(URL, (res2) => {
     let body = '';
     res2.setEncoding('utf8');

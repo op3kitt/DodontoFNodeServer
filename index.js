@@ -18,7 +18,7 @@ const server = http.createServer((req, res) => {
 });
 const server2 = http.createServer((req, res) => {
 });
-module.exports = server;
+module.exports = {http: server, websocket: server2};
 
 const stateHolder = require('./src/stateHolder');
 stateHolder.load(`${config.APP_PATH}/data/save.json`);

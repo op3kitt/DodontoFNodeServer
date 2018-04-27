@@ -6,7 +6,6 @@ module.exports = (req, res, msg) => {
   logger.debug('getDiceBotInfos start');
 
   let URL = `${config.bcdiceUrl}DodontoF/getDiceBotInfos`;
-console.log(URL);
   http.get(URL, (res2) => {
 
     let body = '';
@@ -19,10 +18,12 @@ console.log(URL);
     res2.on('end', (res3) => {
         res.end(body);
     });
+
+    res2.on('end', (e) => {
+      logger.debug('getDiceBotInfos end');
+    });
   }).on('error', (e) => {
-    console.log(e.message); //ƒGƒ‰[Žž
-  }).on('close', (e) => {
-    logger.debug('getDiceBotInfos end');
+      console.log(e.message); //ã‚¨ãƒ©ãƒ¼æ™‚
   });
 
 }

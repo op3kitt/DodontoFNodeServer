@@ -1,12 +1,13 @@
 const assert = require('assert');
 const http = require('http');
+const nock = require('nock');
 const MockRes = require('mock-res');
 const MockReq = require('mock-req');
 const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-const config = require('../src/config.js');
+const config = require('./module/config.js');
 config.APP_PATH = path.resolve(__dirname+'/..');
 const stateHolder = require('../src/stateHolder');
 var logger = require('./module/logger');
@@ -72,7 +73,9 @@ describe('Cmd', function() {
         assert.equal(data.hasOwnProperty('wordChecker'), true);
         assert.equal(data.hasOwnProperty('errorMessage'), true);
       };
-
+      nock('http://nock')
+       .get('/DodontoF/getDiceBotInfos')
+       .reply(200, []);
       req.write(msgpack.encode({
         cmd: "getLoginInfo",
         room: -1,
@@ -104,6 +107,9 @@ describe('Cmd', function() {
         assert.equal(data.uniqueId, "uniqueId");
       }
 
+      nock('http://nock')
+       .get('/DodontoF/getDiceBotInfos')
+       .reply(200, []);
       req.write(msgpack.encode({
         cmd: "getLoginInfo",
         room: 0,
@@ -117,36 +123,5 @@ describe('Cmd', function() {
       
     });
 
-    it('auto logout timeout user', function() {
-      stateHolder.load('test/testData.json');
-      var res = new MockRes();
-      var req = new MockReq({
-        method: 'POST',
-        url: '/DodontoFServer',
-        headers: {
-          "Content-Type": "application/x-msgpack"
-        }
-      });
-      var match = router.match(req.url);
-      match.fn(req, res, match);
-
-
-    	res.end = (data) => {
-        data = JSON.parse(data);
-        assert.equal(data.allLoginCount, 0);
-      }
-
-      req.write(msgpack.encode({
-        cmd: "getLoginInfo",
-        room: 0,
-        params: {
-          uniqueId: "uniqueId"
-        },
-        own: own
-      }));
-      req.end();
-
-      
-    });
   });
 });

@@ -6,10 +6,11 @@ const msgpack = require('msgpack-lite');
 const randomstring = require('randomstring');
 const requireNew = require('require-new');
 const path = require('path');
-const config = require('../src/config.js');
+const config = require('./module/config.js');
 config.APPPATH = path.resolve(__dirname+'/..');
 const stateHolder = require('../src/stateHolder');
 const logger = require('./module/logger');
+const WebSocketClient = require('websocket').client;
 
 describe('Server', function() {
   var router = require('../src/routes');
@@ -20,6 +21,7 @@ describe('Server', function() {
   });
 
   describe('#routing()', function() {
+
     it('no indexes', function() {
       var res = new MockRes();
       var req = new MockReq({
@@ -147,7 +149,7 @@ describe('Server', function() {
       var stateHolder = requireNew('../src/stateHolder.js');
       stateHolder.load('test/testData.json');
 
-      assert.equal(stateHolder.userList.length, 1);
+      assert.equal(stateHolder.userList.length, 0);
     });
 
     it('load corrupted saveData', function() {
@@ -190,12 +192,32 @@ describe('Server', function() {
   });
 
   describe('#app()', function() {
+    let app;
     it('app loading', function() {
       app = require('../index.js');
 
       assert.ok(true);
+    });
 
-      app.close();
+    it('websocket connection', function() {
+
+      stateHolder.userList.push({
+        own: "wstest",
+        lastLoginTime: -1
+      });
+
+      var ws = new WebSocketClient();
+      ws.on('connect', (ws) => {
+        ws.send(msgpack.encode({room:-1,own:"wstest",params:{},cmd:"login"}));
+      });
+      ws.on('httpResponse', (response, client) => {
+        ws.abort();
+        app.http.close();
+        app.websocket.close();
+        assert.ok("true");
+      });
+      ws.connect(`ws://localhost:${config.wsserver.port}`, 'DodontoF-WebSocket', {});
+
     });
   });
 });

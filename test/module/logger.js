@@ -7,4 +7,4 @@ log4js.configure({
     categories: { default: { appenders: ['all'], level: 'debug' } }
   });
 logger = log4js.getLogger('all');
-module.exports.logger;
+module.exports = logger;
