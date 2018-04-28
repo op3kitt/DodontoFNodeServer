@@ -16,6 +16,7 @@
     "msgpack-lite": "^0.1.26",
     "object-merge": "^2.5.1",
     "randomstring": "^1.1.5",
+    "rimraf": "^2.6.2",
     "routes-http": "^0.5.0",
     "websocket": "^1.0.25"
   },

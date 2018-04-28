@@ -74,7 +74,7 @@ describe('Cmd', function() {
         assert.equal(data.hasOwnProperty('errorMessage'), true);
       };
       nock('http://nock')
-       .get('/DodontoF/getDiceBotInfos')
+       .get(/.*/)
        .reply(200, []);
       req.write(msgpack.encode({
         cmd: "getLoginInfo",
@@ -108,7 +108,7 @@ describe('Cmd', function() {
       }
 
       nock('http://nock')
-       .get('/DodontoF/getDiceBotInfos')
+       .get(/.*/)
        .reply(200, []);
       req.write(msgpack.encode({
         cmd: "getLoginInfo",
