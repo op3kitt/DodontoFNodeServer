@@ -16,7 +16,7 @@ module.exports = (req, res, msg) => {
     errorMessages: errorMessages
   };
 
-  res.end(JSON.stringify(result);
-
   logger.debug('removePlayRoomStates end:', result);
+
+  res.end(JSON.stringify(result));
 }
