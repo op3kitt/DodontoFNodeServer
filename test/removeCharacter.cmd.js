@@ -38,7 +38,7 @@ describe('Cmd', function() {
 
         assert.equal(data[0], null);
 
-        assert.equal(stateHolder.roomData[0].data.graveyard.length, 1);
+        assert.equal(stateHolder.roomData[0].data.graveyard.length, 2);
       };
 
       req.write(msgpack.encode({
@@ -74,7 +74,7 @@ describe('Cmd', function() {
 
         assert.equal(data[0], null);
 
-        assert.equal(stateHolder.roomData[0].data.graveyard.length, 0);
+        assert.equal(stateHolder.roomData[0].data.graveyard.length, 1);
       };
 
       req.write(msgpack.encode({
