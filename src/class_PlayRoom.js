@@ -1,10 +1,14 @@
 const config = require('./config');
+const rimraf = require('rimraf').sync;
+const crypt = require('bcryptjs');
+const stateHolder = require('./stateHolder');
+const fs = require('fs');
 
 class PlayRoom{
   constructor(roomNumber, playRoomName, playRoomPassword, gameType, canVisit, canUseExternalImage, chatChannelNames, viewStates){
     this.roomNumber = roomNumber;
     this.data = {
-      login: {},
+      login: [],
       chatMessageDataLog: [],
       roundTimeData: {
         initiative: 0.0,
@@ -69,27 +73,39 @@ class PlayRoom{
     this.data.playRoomInfo.viewStateInfo = Object.assign(this.data.playRoomInfo.viewStateInfo, viewStates);
   };
 
-  /*remove(ignoreLoginUser, password, isForce){
+  static remove(roomNumber, ignoreLoginUser, password, isForce){
+    room = stateHolder.roomData[roomNumber];
 
-    if(config.unremovablePlayRoomNumbers.includes(this.roomNumber)){
+    if(config.unremovablePlayRoomNumbers.includes(roomNumber)){
       return "unremovablePlayRoomNumber";
     }
 
     if(!ignoreLoginUser){
-      this.data.login = this.data.login.filter(
+      room.data.login = room.data.login.filter(
         item => item.timeSeconds > new Date().getTime() - config.loginTimeOut * 1000
       );
-      if(this.data.login.length > 0){
-        return "userExist"
+      if(room.data.login.length > 0){
+        return "userExists"
       }
     }
 
-    if(this.playRoomInfo.playRoomPassword && config.isPasswordNeedFroDeletePlayRoom){
+    if(password !== null && room.data.playRoomInfo.playRoomPassword && config.isPasswordNeedForDeletePlayRoom){
+      if(!crypt.compareSync(password, room.data.playRoomInfo.playRoomPassword)){
+        return "password"
+      }
+    }
 
+    /*if(!isForce) {
+
+      return "passedTime"
+    }*/
+
+    if(!fs.existsSync(`${config.imageUploadSpace}/room_${room.roomNumber}`)){
+      rimraf(`${config.imageUploadSpace}/room_${room.roomNumber}`);
     }
 
     return "OK"
-  }*/
+  }
 }
 
 module.exports = PlayRoom;
